@@ -1,0 +1,464 @@
+//Start Media.java
+import java.time.LocalDateTime;
+
+
+public class Media {
+	public enum Genre {
+	    ACTION, ROMANCE, COMEDY, FANTASY, SCIENCE_FICTION, HISTORY, DRAMA 
+	}
+	
+	public enum Type {
+	    SERIES, MOVIE
+	}
+	
+	private String title;
+	private Type type;
+	private Genre genre;
+	private LocalDateTime releaseYear;
+	private int numSeasons; //-1 if not a series
+	private LocalDateTime dateExpiring;
+	private boolean watched;//a show that you've seen before can still be in your watchlist
+	
+//public Media constructor
+	public Media(String title, 
+			Type type, 
+			Genre genre, 
+			LocalDateTime releaseYear, 
+			int numSeasons, 
+			LocalDateTime dateExpiring, boolean watched) {
+		this.title = title;
+		this.type = type;
+		this.genre = genre;
+		this.releaseYear = releaseYear;
+		this.numSeasons = numSeasons;
+		this.dateExpiring = dateExpiring;
+		this.watched = watched;
+	}
+	
+	
+	//Semi-Random Media Object A.K.A. overkill constructor
+	
+	/*
+	public Media() {
+		
+		//title will just be lowercase letter a-z
+		
+		int asciiOfTitle = WatchList.randomIntInRangeInclusive(97, 122);
+		
+		char characterOfTitle = (char)(asciiOfTitle);
+		
+		String title = Character.toString(characterOfTitle);
+		
+		this.title = title;
+		
+		//---------------------------
+		
+		//Type is either series of movie
+		
+		int typeDeterminer = WatchList.randomIntInRangeInclusive(1, 2);
+		
+		if (typeDeterminer == 1) {
+			
+			this.type = Type.SERIES;
+			
+		}else {
+			
+			this.type = Type.MOVIE;
+			
+		}
+		
+		//----------------------------
+		
+		//Seven options for Genre, chosen with switch statement
+		
+		int genreDeterminer = WatchList.randomIntInRangeInclusive(1, 7);
+		switch (genreDeterminer) {
+			case 1: this.genre = Genre.ACTION;
+					break;
+			case 2: this.genre = Genre.COMEDY;
+					break;
+			case 3: this.genre = Genre.DRAMA;
+					break;
+			case 4: this.genre = Genre.FANTASY;
+					break;
+			case 5: this.genre = Genre.HISTORY;
+					break;
+			case 6: this.genre = Genre.ROMANCE;
+					break;
+			default: this.genre = Genre.SCIENCE_FICTION;
+					break;
+		}
+		
+		//------------------------------------------
+		
+		//Release year assumed to be between 2000 and 2030
+		
+		int releaseYear = WatchList.randomIntInRangeInclusive(2000, 2030);
+		
+		//------------------------------------------
+		
+		int releaseMonth = WatchList.randomIntInRangeInclusive(1, 12);
+		
+		//Day of month can be anything from 1 to 31 for Jan, Mar, May, Jul, Aug, Oct, Dec
+		//Can be from 1 to 30 for Apr, Jun, Sep, Nov
+		//Can be 1 to 29 for Feb in leap years, 1 to 28 for non leaps
+		
+		//Declare day
+		int releaseDayOfMonth;
+		
+		int finalPossDay;
+		
+		if (releaseMonth == 1 || 
+				releaseMonth == 3 ||
+				releaseMonth == 5 ||
+				releaseMonth == 7 ||
+				releaseMonth == 8 ||
+				releaseMonth == 10 ||
+				releaseMonth == 12) {
+			
+			finalPossDay = 31;
+			releaseDayOfMonth = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+			
+		} 
+		
+		if (releaseMonth == 2) {
+			
+			//conditions in Feb
+			
+			if(releaseYear % 4 == 0) {
+				
+				finalPossDay = 29;
+				releaseDayOfMonth = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+				
+			}
+			
+			else {
+				
+				finalPossDay = 28;
+				releaseDayOfMonth = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+				
+			}
+			
+		} 
+		
+		else {
+			
+			finalPossDay = 30;
+			releaseDayOfMonth = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+			
+		}
+		
+		int releaseHour = WatchList.randomIntInRangeInclusive(0, 23);
+		
+		int releaseMinute = WatchList.randomIntInRangeInclusive(0, 59);
+		
+		//Initialize release date
+		
+		LocalDateTime timeForRelease = LocalDateTime.of(
+				releaseYear, 
+				releaseMonth, 
+				releaseDayOfMonth, 
+				releaseHour, 
+				releaseMinute);
+		
+		//set instance var
+		
+		this.releaseYear = timeForRelease;
+		
+		//Declare seasons
+		
+		int numberOfSeasons;
+		
+		//If type (already defined) is MOVIE, seasons is -1, else random 1-10
+		
+		if (this.type == Type.MOVIE) {
+			
+			numberOfSeasons = -1;
+			
+		}
+		else {
+			
+			numberOfSeasons = WatchList.randomIntInRangeInclusive(1, 10);
+			
+		}
+		this.numSeasons = numberOfSeasons;
+		
+		//Expiring year is always the same as or after release year
+		
+		int expiringYear = WatchList.randomIntInRangeInclusive(releaseYear, releaseYear + 5);
+		
+		int expiringMonth;
+		
+		int expiringDay;
+		
+		int expiringHour;
+		
+		int expiringMinute;
+		
+		//If expiring year is the same as release year, expiring month must be same or after release month
+		
+		if (expiringYear == releaseYear) {
+			
+			expiringMonth = WatchList.randomIntInRangeInclusive(releaseMonth, 12);
+			
+			//If expiring month is the same as release month for same year, day must be same or after
+			
+			if (expiringMonth == releaseMonth) {
+				
+				expiringDay = WatchList.randomIntInRangeInclusive(releaseDayOfMonth, finalPossDay);
+				
+				//If days are same, hour must be same or after
+				
+				if (expiringDay == releaseDayOfMonth) {
+					
+					expiringHour = WatchList.randomIntInRangeInclusive(releaseHour, 23);
+					
+					//If hours are same, minute must be same or after
+					
+					if (expiringHour == releaseHour) {
+						
+						expiringMinute = WatchList.randomIntInRangeInclusive(releaseMinute, 59);
+						
+					}else {
+						
+						expiringMinute = WatchList.randomIntInRangeInclusive(1, 59);
+						
+					}
+					
+				}else {
+					
+					expiringHour = WatchList.randomIntInRangeInclusive(1, 23);
+					
+					expiringMinute = WatchList.randomIntInRangeInclusive(1, 59);
+					
+				}
+				
+			}else {
+				
+				if (expiringMonth == 1 || 
+						expiringMonth == 3 ||
+						expiringMonth == 5 ||
+						expiringMonth == 7 ||
+						expiringMonth == 8 ||
+						expiringMonth == 10 ||
+						expiringMonth == 12) {
+					
+					finalPossDay = 31;
+					expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+					
+				} 
+				
+				if (expiringMonth == 2) {
+					
+					//conditions in Feb
+					
+					if(expiringYear % 4 == 0) {
+						
+						finalPossDay = 29;
+						expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+						
+					}
+					
+					else {
+						
+						finalPossDay = 28;
+						expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+						
+					}
+					
+				} 
+				
+				else {
+					
+					finalPossDay = 30;
+					expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+					
+				}
+				
+				
+				expiringHour = WatchList.randomIntInRangeInclusive(1, 23);
+				
+				expiringMinute = WatchList.randomIntInRangeInclusive(1, 59);
+				
+			}
+			
+		}else {
+			
+			expiringMonth = WatchList.randomIntInRangeInclusive(1, 12);
+			
+			if (expiringMonth == 1 || 
+					expiringMonth == 3 ||
+					expiringMonth == 5 ||
+					expiringMonth == 7 ||
+					expiringMonth == 8 ||
+					expiringMonth == 10 ||
+					expiringMonth == 12) {
+				
+				finalPossDay = 31;
+				expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+				
+			} 
+			
+			if (expiringMonth == 2) {
+				
+				//conditions in Feb
+				
+				if(expiringYear % 4 == 0) {
+					
+					finalPossDay = 29;
+					expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+					
+				}
+				
+				else {
+					
+					finalPossDay = 28;
+					expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+					
+				}
+				
+			} 
+			
+			else {
+				
+				finalPossDay = 30;
+				expiringDay = WatchList.randomIntInRangeInclusive(1, finalPossDay);
+				
+			}
+			
+			expiringHour = WatchList.randomIntInRangeInclusive(1, 23);
+			
+			expiringMinute = WatchList.randomIntInRangeInclusive(1, 59);
+			
+		}
+		
+		//Initialize expiring time
+		
+		LocalDateTime timeToExpire = LocalDateTime.of(expiringYear, expiringMonth, expiringDay, expiringHour, expiringMinute);
+		
+		//Set instance var
+		
+		this.dateExpiring = timeToExpire;
+		
+		//Set watched instance var
+		
+		int watchedDeterminer = WatchList.randomIntInRangeInclusive(1, 2);
+		
+		if (watchedDeterminer == 1) {
+			
+			this.watched = true;
+			
+		}else {
+			
+			this.watched = false;
+			
+		}
+		
+		//Constructed!!
+		
+	}
+
+*/
+	public String getTitle() {
+		return title;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public Type getType() {
+		return type;
+	}
+
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+
+	public Genre getGenre() {
+		return genre;
+	}
+
+
+	public void setGenre(Genre genre) {
+		this.genre = genre;
+	}
+
+
+	public LocalDateTime getReleaseYear() {
+		return releaseYear;
+	}
+
+
+	public void setReleaseYear(LocalDateTime releaseYear) {
+		this.releaseYear = releaseYear;
+	}
+
+
+	public int getNumSeasons() {
+		return numSeasons;
+	}
+
+
+	public void setNumSeasons(int numSeasons) {
+		this.numSeasons = numSeasons;
+	}
+	
+	@Override
+	public String toString() {
+		return title + "/" + releaseYear.getYear();
+	}
+
+
+	public LocalDateTime getDateExpiring() {
+		return dateExpiring;
+	}
+
+
+	public void setDateExpiring(LocalDateTime dateExpiring) {
+		this.dateExpiring = dateExpiring;
+	}
+
+
+	public boolean isWatched() {
+		return watched;
+	}
+
+
+	public void setWatched(boolean watched) {
+		this.watched = watched;
+	}
+	
+	//go over .equals() overriding with them
+	//(but not present in the starter code -- they need to write)
+
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (this ==  obj) {
+			return true;
+		}
+		
+		if (obj == null) {
+			return false;
+		}
+		
+		if (!(obj instanceof Media)) {
+			return false;
+		}
+		
+		Media med = (Media)obj;
+		return med.title.equals(this.title)
+				&& med.type == this.type
+				&& med.genre == this.genre
+				&& med.releaseYear.equals(this.releaseYear)
+				&& med.numSeasons == this.numSeasons
+				&& med.dateExpiring.equals(this.dateExpiring);
+	}
+
+
+}
+//End Media.java
