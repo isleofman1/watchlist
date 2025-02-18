@@ -1,0 +1,1254 @@
+
+//start WatchList.java
+
+
+//Import statements
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+
+public class WatchList {
+	
+	
+	//Enum to specify the type of sort in the sort(SortBy sortBy) method
+	
+	public enum SortBy {
+    	TITLE_ALPHA_ASC,
+    	DATE_EXPIRING_DESC
+	}
+    
+	
+//Instance variable declaration
+	
+	
+	//queue is an array of objects from the Media class
+	//Before and after any method is run, it should have length capacity
+	//The number of non null values in queue should equal size
+	
+	private Media[] queue;
+	
+	
+	//size represents the number of Media objects represented by the this object
+	
+	private int size;
+	
+	
+	//capacity represents the total number of Media objects that this can contain
+	
+	private int capacity;
+    
+	
+	/*
+	 * Non-static method getQueue
+	 * Parameters: none
+	 * Returns a Media array representing the 
+	 * current state of the WatchList queue
+	 * Functionality: this method is a getter
+	 * for the WatchList class to return the 
+	 * instance variable queue
+	 */
+	
+	public Media[] getQueue() {
+		
+		//Create new array with length capacity
+		Media[] queue = new Media[this.capacity];
+    	
+		//Add each value in the queue to the new array
+		//This prevents issues with mutating the returned array
+    	for (int i = 0; i<this.size; i++) {
+    		
+    		queue[i] = this.queue[i];
+    		
+    	}
+		
+    	return queue;
+	}
+
+
+	/*
+	 * Non-static method getSize
+	 * Parameters: none
+	 * Returns: an integer representing the number
+	 * of Media objects in the WatchList
+	 * Functionality: Getter for the WatchList class
+	 * which allows the size of a WatchList object
+	 * to be obtained outside of the class
+	 */
+	
+	public int getSize() {
+		
+    	return this.size;
+    	
+	}
+
+
+	/*
+	 * Non-static method getCapacity
+	 * Parameters: none
+	 * Returns: an integer representing the total
+	 * capacity of the WatchList
+	 * Functionality: Getter for the WatchList class.
+	 * Allows capacity to be obtained in a different class
+	 */
+	
+	public int getCapacity() {
+		
+    	return this.capacity;
+    	
+	}
+    
+	
+	/*
+	 * Default constructor for the WatchList class
+	 * Functionality: Creates a new WatchList object
+	 * with a capacity of 0 and a size of 10
+	 * Also initializes a new queue of Media objects
+	 * accordingly
+	 */
+	
+	public WatchList() {
+		
+    	this.size = 0;
+    	
+    	this.capacity = 10;
+    	
+    	this.queue = new Media[10];
+    	
+	}
+    
+	/*
+	 * Overloaded constructor for the WatchList class
+	 * Parameters: size (integer), capacity (integer),
+	 * corresponding to the number of Media objects
+	 * in the queue and the length of the queue.
+	 * Functionality: Creates a WatchList object with
+	 * size size and capacity capacity. Populates the 
+	 * indices of queue from 0 to size-1 with randomly 
+	 * created Media objects using the Constructor from 
+	 * the Media class
+	 */
+	
+	//I basically just made this method as well as
+	//the random Media constructor to do test cases with.
+	
+	//Commenting it out bc it'll error since you don't have access
+	//to my Media class
+    
+	/*
+	public WatchList(int size, int capacity) {
+   	 
+    	this.capacity = capacity;
+   	 
+    	this.queue = new Media[capacity];
+   	 
+    	this.size = 0;
+   	 
+    	for (int i = 0; i<size; i++) {
+    		
+    		//Call to random Media constructor
+        	Media m = new Media();
+        	
+        	this.queue[i] = m;
+        	
+        	this.size++;
+        	
+    	}
+   	 
+	}
+	*/
+	
+    
+	/*
+	 * Copy constructor for the WatchList class
+	 * Parameters: w (WatchList), containing the
+	 * attributes to be copied
+	 * Functionality: Create a new WatchList object
+	 * with the same attributes as w, but not connected
+	 * to w.
+	 */
+	
+	public WatchList(WatchList w) {
+		
+    	this.size = w.getSize();
+    	
+    	this.capacity = w.getCapacity();
+    	
+    	Media[] queue = new Media[this.capacity];
+    	
+    	for (int i = 0; i<this.size; i++) {
+    		
+    		queue[i] = w.getQueue()[i];
+    		
+    	}
+    	
+    	this.queue = queue;
+    	
+	}
+    
+	
+	/*
+	 * Overloaded constructor for the WatchList class
+	 * Parameters: startingCapacity (int), referring to
+	 * the capacity the new WatchList object should have
+	 * Functionality: Creates a new WatchList object with
+	 * capacity startingCapacity and size 0. Initializes
+	 * the queue.
+	 * Precondition: startingCapacity > 0
+	 */
+	
+	public WatchList(int startingCapacity) {
+		
+    	this.size = 0;
+    	
+    	this.capacity = startingCapacity;
+    	
+    	this.queue = new Media[startingCapacity];
+    	
+	}
+    
+	
+	/*
+	 * Overloaded constructor for the WatchList class
+	 * Parameters: mList (ArrayList<Media>), containing 
+	 * the Media objects to put in the new WatchList
+	 * Functionality: Creates a new WatchList object
+	 * with size mList.size() and capacity equal to 
+	 * the smallest power of 2 greater than mList.size().
+	 * Initializes the queue with all the Media objects
+	 * in mList (in the same order)
+	 * Precondition: mList contains no duplicates
+	 */
+	
+	public WatchList(ArrayList<Media> mList) {
+		
+    	this.size = mList.size();
+    	
+    	this.capacity = twoPower(mList.size());
+    	
+    	this.queue = new Media[this.capacity];
+    	
+    	//Adds the Media object at each index in mList
+    	//to the same index in this.queue
+    	for (int i = 0; i<mList.size(); i++) {
+    		
+        	this.queue[i] = mList.get(i);
+        	
+    	}
+    	
+	}
+	
+	
+	/*
+	 * Static helper method twoPower
+	 * Parameters: lower (int), the number for which we
+	 * want to find the next power of 2
+	 * Returns: an integer that the smallest power of
+	 * two that is greater than lower
+	 * Precondition: lower is non-negative
+	 */
+	
+	public static int twoPower(int lower) {
+		
+		//Log breaks and does weird negative inf stuff
+		//when you put 0 in so this takes care of that
+		if (lower == 0) {
+			
+			return 1;
+			
+		}
+		
+    	int power = (int)(Math.log10(lower)/Math.log10(2));
+    	
+    	return (int)(Math.pow(2, power+1));
+    	
+	}
+
+
+	/*
+	 * Non-static method sort
+	 * Parameters: sortBy (member of the SortBy enum).
+	 * Dictates the manner in which the queue should 
+	 * be sorted.
+	 * Returns: nothing
+	 * Functionality: Runs a selection sort on the queue.
+	 * Implements the findMin mechanism, as well as the 
+	 * swap mechanism. Sorts in accordance with the 
+	 * sortBy enum parameter.
+	 * DOES NOT TOUCH NULLS that would be very bad
+	 * Postcondition: the queue is sorted and there are
+	 * no null gaps
+	 */
+	
+	public void sort(SortBy sortBy) {
+		
+		//Sorts in alphabetical order
+    	if (sortBy==SortBy.TITLE_ALPHA_ASC) {
+    		
+        	for (int i = this.size-1; i>0; i--) {
+        		
+            	int minIndex = 0;
+           	 	
+            	//Find minIndex loop
+            	for (int j = 1; j<=i; j++) {
+            		
+                	if(
+                		this.queue[j].getTitle()
+                		.compareToIgnoreCase(
+                		this.queue[minIndex].getTitle())
+                		>0) {
+                		
+                    	minIndex = j;
+                    	
+                	}
+                	
+            	}
+            	
+            	//Swap mechanism
+            	Media temp = this.queue[minIndex];
+            	
+            	this.queue[minIndex] = this.queue[i];
+            	
+            	this.queue[i] = temp;
+           	 
+        	}
+       	 
+        //Sorts by expiration date with items expiring sooner
+        //coming earlier in the queue
+        
+    	}else {
+    		
+        	for (int i = this.size-1; i>0; i--) {
+        		
+            	int minIndex = 0;
+           	 	
+            	//Find minIndex loop
+            	for (int j = 0; j<=i; j++) {
+            		
+                	if(
+                		this.queue[j].getDateExpiring()
+                		.isBefore(
+                		this.queue[minIndex]
+                		.getDateExpiring())) {
+                		
+                    	minIndex = j;
+                    	
+                	}
+                	
+            	}
+            	
+            	//Swap mechanism
+            	Media temp = this.queue[minIndex];
+            	
+            	this.queue[minIndex] = this.queue[i];
+            	
+            	this.queue[i] = temp;
+           	 
+        	}
+       	 
+    	}
+
+	}
+    
+	
+	/*
+	 * Non-static method toString
+	 * Parameters: visualizeCapacity (boolean).
+	 * Dictates whether the string returned should
+	 * display the null values in the queue or not
+	 * Returns: A string representing the state of the queue
+	 * Functionality: Provides a way to view the WatchList object
+	 */
+	
+	public String toString(boolean visualizeCapacity) {
+		
+    	String queueString = "[";
+    	
+    	//Case if null values are wanted
+    	if (visualizeCapacity) {
+    		
+        	for (int i = 0; i<this.size; i++) {
+        		
+            	queueString += this.queue[i].toString();
+            	
+            	queueString += ", ";
+            	
+        	}for (int j = this.size; j<this.capacity; j++) {
+        		
+            	queueString += "null, ";
+            	
+        	}
+        	
+        	queueString = queueString.substring(0, queueString.length()-2);
+        	
+        	queueString += "]";
+        	
+        	return queueString;
+        	
+    	}
+    	
+    	//Runs if nulls are not wanted
+    	for (int i = 0; i<this.size; i++) {
+    		
+        	queueString += this.queue[i].toString();
+        	
+        	queueString += ", ";
+        	
+    	}queueString = queueString.substring(0, queueString.length()-2);
+    	
+    	queueString += "]";
+    	
+    	return queueString;
+    	
+	}
+    
+    
+	/*
+	 * Non-static method append
+	 * Parameters: m (Media), the Media object to be
+	 * added to the WatchList
+	 * Returns: a boolean representing whether the
+	 * addition was successful or not
+	 * If the object is already in the WatchList,
+	 * this method returns false.
+	 * Functionality: Appends a Media object to the WatchList.
+	 * Calls the resize method to resizes the array if size 
+	 * is capacity before adding the object.
+	 * Also resizes if size hits capacity after adding the object.
+	 * Calls the twoPower method to dictate what the capacity
+	 * should be after the resize.
+	 */
+	
+	public boolean append(Media m) {
+		
+		//Does nothing but return false if m is already present
+    	if (this.contains(m)){
+    		
+        	return false;
+        	
+    	}
+    	
+    	//Resizes if size is already capacity
+    	//This would likely occur after trimToSize was called
+    	if(this.size == this.capacity) {
+    		
+        	this.resize(twoPower(this.size));
+        	
+        	this.queue[this.size] = m;
+        	
+        	this.size++;
+       	 
+    	}
+    	
+    	else{
+    		
+        	this.queue[size] = m;
+        	
+        	this.size++;
+        	
+    	}
+    	
+    	//Resizes if size hits capacity
+    	if (this.size == this.capacity) {
+    		
+        	this.resize(twoPower(this.size));
+        	
+    	}
+    	
+    	//Successful addition
+    	return true;
+   	 
+	}
+    
+	
+	/*
+	 * Non-static helper method resizeToArray
+	 * Parameters: newCapacity (int), indicating the
+	 * length that the returned array should be
+	 * Returns: a Media[] array that is essentially the
+	 * same as the current queue but with a length of
+	 * newCapacity. The Media objects inside should be
+	 * the same.
+	 * Functionality: To create a new array with 
+	 * the specified length and the same values in
+	 * the same order as in the queue
+	 * Precondition: newCapacity is non-negative
+	 */
+	
+	public Media[] resizeToArray(int newCapacity) {
+		
+    	Media[] newArr = new Media[newCapacity];
+    	
+    	//Populate the new array
+    	for(int i = 0; i<this.size; i++) {
+    		
+        	newArr[i] = this.queue[i];
+        	
+    	}
+    	
+    	return newArr;
+    	
+	}
+    
+	
+	/*
+	 * Non-static helper method resize
+	 * Parameters: newCapacity (int), indicating 
+	 * the capacity that the WatchList object
+	 * should have after the method is called
+	 * Returns: nothing
+	 * Functionality: Changes the capacity of 
+	 * the this object to newCapacity, and changes
+	 * the queue to have length newCapacity.
+	 * Does not change this.size and keeps the same
+	 * Media objects in the new queue
+	 * Precondition: newCapacity is non-negative
+	 */
+	
+	public void resize(int newCapacity) {
+		
+		//Changes the queue by calling resizeToArray
+    	this.queue = resizeToArray(newCapacity);
+    	
+    	this.capacity = newCapacity;
+    	
+	}
+    
+	
+	/*
+	 * Non-static helper method addAtIndexWithNoDupes
+	 * Parameters: m (Media), index (int). m is the object to be added
+	 * and index is the location it should ba added at
+	 * Returns: Nothing
+	 * Functionality: adds a Media object at the specified index
+	 * shifts all elements at or greater than that index right 1,
+	 * resizing if appropriate. Also checks for resizing before adding
+	 * Precondition: m is not already in the WatchList and index is valid
+	 */
+	
+	public void addAtIndexWithNoDupes(Media m, int index) {
+		
+    	if(this.size == this.capacity) {
+    		
+        	this.capacity = twoPower(this.size);
+        	
+        	Media[] newArr = new Media[this.capacity];
+        	
+        	for(int i = 0; i<index; i++) {
+        		
+            	newArr[i] = this.queue[i];
+            	
+        	}
+        	
+        	newArr[index] = m;
+        	
+        	for (int j = index+1; j<=this.size; j++) {
+        		
+            	newArr[j] = this.queue[j-1];
+            	
+        	}
+        	
+        	this.size++;
+        	
+        	this.queue = newArr;
+        	
+    	}
+    	
+    	else{
+    		
+        	for(int i = this.size; i>index; i--) {
+        		
+            	this.queue[i] = this.queue[i-1];
+            	
+        	}
+        	
+        	this.queue[index] = m;
+        	
+        	this.size++;
+        	
+    	}
+    	
+    	if (this.size == this.capacity) {
+    		
+        	this.resize(twoPower(this.size));
+        	
+    	}
+   	 
+	}
+	
+	
+	/*
+	 * Non-static method addToFront
+	 * Parameters: m (Media) is the object to be added
+	 * Returns: Nothing
+	 * Functionality: Same as addAtIndex but with index 0
+	 * which guarantees in bounds
+	 */
+	
+	public void addToFront(Media m) {
+		
+    	this.addAtIndex(m, 0);
+    	
+	}
+    
+	
+	/*
+	 * Non-static method addAtIndex
+	 * Parameters: m (Media), i (int), which specify
+	 * the object to be added and the index it should
+	 * end up at.
+	 * Returns: a boolean indicating whether the addition 
+	 * was successful or not
+	 * Functionality: Adds m to the queue, at index i. If it
+	 * is impossible to have m at index i without damaging
+	 * the integrity of the WatchList, return false.
+	 * If m is a duplicate, the other m should be removed
+	 * and the new m should be added
+	 */
+	
+	public boolean addAtIndex(Media m, int i) {
+		
+    	if(
+    		i>this.size || 
+    		i<0 || 
+    		(i==this.size && 
+    		this.contains(m))) {
+    		
+        	return false;
+        	
+    	}
+    	
+    	if(!(this.contains(m))) {
+    		
+        	this.addAtIndexWithNoDupes(m, i);
+        	
+    	}
+    	
+    	else {
+    		
+    		if(this.size == this.capacity) {
+    			
+    			this.remove(m);
+    			
+            	this.addAtIndexWithNoDupes(m, i);
+            	
+            	this.trimToSize();
+            	
+    		}
+    		
+    		else {
+    			
+    			this.remove(m);
+    			
+            	this.addAtIndexWithNoDupes(m, i);
+    			
+    		}
+        	
+    	}
+    	
+    	return true;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method clearWatchList
+	 * Parameters: none
+	 * Returns: Nothing
+	 * Functionality: Clears the WatchList of all
+	 * Media Objects. Capacity remains the same but
+	 * size ends up being zero and the queue becomes
+	 * an array of nulls
+	 */
+	
+	public void clearWatchList() {
+		
+		
+    	for (int i = 0; i<this.size; i++) {
+        	this.queue[i] = null;
+        	
+    	}
+    
+    	this.size = 0;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method clearExpiring
+	 * Parameters: None
+	 * Returns: an integer indicating the number of objects removed
+	 * Functionality: Removes all Media objects in the queue
+	 * that have already expired (by accessing LocalDateTime.now()).
+	 * Changes size to the amount of items now in the WatchList
+	 * but does not change capacity. Ensures that there are no 
+	 * null gaps in the queue
+	 */
+	
+	public int clearExpiring() {
+		
+    	int counter = 0;
+    	
+    	for (int i = 0; i<this.size; i++) {
+    		
+        	if (
+        		this.queue[i].getDateExpiring().
+        		isBefore(LocalDateTime.now())) {
+        		
+            	this.remove(this.queue[i]);
+            	
+            	counter++;
+            	
+            	i--;
+            	
+        	}
+        	
+    	}
+    	
+    	return counter;
+    	
+	}
+    
+	
+	/*
+	 * Non-static helper method cycle
+	 * Parameters: none
+	 * Returns: nothing
+	 * Functionality: Moves every item in the 
+	 * queue one space to the left and adds 
+	 * the element that was at index 0 to the end
+	 * of the queue (index size-1)
+	 */
+	
+	public void cycle() {
+		
+    	Media temp = this.queue[0];
+    	
+    	this.remove(this.queue[0]);
+    	
+    	this.append(temp);
+   	 
+	}
+	
+	
+	/*
+	 * Non-static method shuffle
+	 * Parameters: none
+	 * Returns: nothing
+	 * Functionality: Calls the cycle method a number of
+	 * times between 1 and size-1 by using
+	 * the randomIntInRangeInclusive method
+	 * to ensure every object is at a new index
+	 * Precondition: size is greater than 1
+	 * 
+	 */
+	public void shuffle() {
+		
+        int cycleNum = randomIntInRangeInclusive(1,this.size-1);
+        
+        for (int i = 0; i<cycleNum; i++) {
+        	
+            this.cycle();
+            
+        }
+    	
+	}
+    
+	
+	/*
+	 * Non-static method markMediaAsWatched
+	 * Parameters: m (Media), indicating the object
+	 * to mark as watched
+	 * Returns: a boolean that is true if m is in the queue
+	 * and otherwise false
+	 * Functionality: Marks an object as watched
+	 */
+	
+	public boolean markMediaAsWatched(Media m) {
+		
+    	if (!(this.contains(m))) {
+    		
+        	return false;
+        	
+    	}
+    	
+    	int mIndex = this.indexOf(m);
+    	
+    	this.queue[mIndex].setWatched(true);
+    	
+    	return true;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method removeWatched
+	 * Parameters: none
+	 * Returns: an integer indicating the number of 
+	 * removed objects
+	 * Functionality: Removes all Media objects from the
+	 * queue that have been marked as watched
+	 */
+	
+	public int removeWatched() {
+		
+    	int counter = 0;
+    	
+    	for (int i = 0; i<this.size; i++) {
+    		
+        	if(this.queue[i].isWatched()) {
+        		
+            	this.remove(this.queue[i]);
+            	
+            	counter++;
+            	
+            	i--;
+            	
+        	}
+        	
+    	}
+    	
+    	return counter;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method contains
+	 * Parameters: m (Media) 
+	 * Returns: a boolean indicating if m
+	 * was found in the WatchList
+	 * Functionality: Determines whether
+	 * or not an object m is in the WatchList.
+	 * Basically just checks if the index 
+	 * returned by this.indexOf(m) is -1 or not
+	 */
+	
+	public boolean contains(Media m) {
+		
+    	if(this.indexOf(m) == -1) {
+    		
+        	return false;
+        	
+    	}
+    	
+    	return true;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method indexOf
+	 * Parameters: m (Media)
+	 * Returns: an integer indicating the index
+	 * of m in the WatchList
+	 * Functionality: Determines the index
+	 * of a specified Media object in the queue of
+	 * WatchList. Returns -1 if the object is not found.
+	 * Conducts a linear search
+	 */
+	
+	public int indexOf(Media m) {
+		
+    	for (int i = 0; i<this.size; i++) {
+    		
+        	if (this.queue[i].equals(m)) {
+        		
+            	return i;
+            	
+        	}
+        	
+    	}
+    	
+    	return -1;
+    
+	}
+    
+	
+	/*
+	 * Non-static method numberInQueue
+	 * Parameters: m (Media)
+	 * Returns: an integer indicating
+	 * the position of m in the WatchList
+	 * using 1-based indexing
+	 * Functionality: Calls the indexOf method
+	 * and adds 1 to the return to determine the
+	 * 1-based index of m
+	 * Precondition: m is in the WatchList
+	 */
+	
+	public int numberInQueue(Media m) {
+		
+    	return indexOf(m)+1;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method remove
+	 * Parameters: m (Media), the object to be removed
+	 * Returns: a boolean indicating whether or 
+	 * not the removal was successful
+	 * Functionality: Removes the Media object m
+	 * from the WatchList, mutating the queue and
+	 * size in accordance with proper
+	 * item removal as defined in the spec
+	 * Returns false if m is not in the WatchList
+	 */
+	
+	public boolean remove(Media m) {
+		
+    	if (!(this.contains(m))) {
+    		
+        	return false;
+        	
+    	}
+    	
+    	int indexOfm = this.indexOf(m);
+    	
+    	for (int i = indexOfm; i<this.size-1; i++) {
+    		
+        	this.queue[i] = this.queue[i+1];   	 
+        	
+    	}
+    	
+    	this.queue[this.size-1] = null;
+    	
+    	this.size--;
+    	
+    	return true;
+    	
+	}
+    
+	
+	/*
+	 * Non-static method removeAll
+	 * Parameters: mediaList (ArrayList<Media>)
+	 * Returns: an integer indicating the number
+	 * of objects successfully removed
+	 * Functionality: Removes each object in 
+	 * mediaList, if possible. Returns the number
+	 * of objects successfully removed
+	 */
+	
+	public int removeAll(ArrayList<Media> mediaList) {
+		
+    	int count = 0;
+    	
+    	for (Media m: mediaList) {
+    		
+        	if(this.remove(m)) {
+        		
+            	count++;
+            	
+            	this.remove(m);
+           	 
+        	}
+        	
+    	}
+    	
+    	return count;
+    	
+	}
+
+
+	/*
+	 * Non-static method removeAll (different method
+	 * signature from the previous removeAll method)
+	 * Parameters: t (Media.Type enum), g (Media.Genre enum)
+	 * Returns: an integer indicating the number of
+	 * items successfully removed
+	 * Functionality: Removes all Media objects in the WatchList
+	 * with type t AND genre g and returns the number removed
+	 */
+	
+	public int removeAll(Media.Type t, Media.Genre g) {
+		
+    	int count = 0;
+    	
+    	for (int i = 0; i<this.size; i++) {
+    		
+        	if(
+        		this.queue[i].getType() == t && 
+        		this.queue[i].getGenre() == g) {
+        		
+            	this.remove(this.queue[i]);
+            	
+            	count++;
+            	
+            	i--; //1000 lines!!! :((((((((((((((((((((((((((((((((((((((
+            	
+        	}
+        	
+    	}
+    	
+    	return count;
+    	
+	}
+
+
+	/*
+	 * Non-static method trimToSize
+	 * Parameters: None
+	 * Returns: Nothing
+	 * Functionality: Resizes the WatchList
+	 * to have capacity equal to size by calling 
+	 * the resize helper method. 
+	 */
+	
+	public void trimToSize() {
+		
+    	this.resize(this.size);
+   	 
+	}
+
+
+	/*
+	 * Non-static method toArray
+	 * Parameters: none
+	 * Returns: a Media[] array with length size
+	 * Functionality: Creates and returns a Media[] array
+	 *  representing the state of the queue without
+	 * the null objects. Does not mutate this.queue
+	 * Calls the resizeToArray helper method
+	 */
+	
+	public Media[] toArray() {
+		
+    	WatchList temp = new WatchList(this);
+    	
+    	return temp.resizeToArray(this.size);
+   	 
+	}
+
+
+	/*
+	 * Non-static method subList
+	 * Parameters: from (inclusive int), 
+	 * to (exclusive int), indicating the
+	 * indices that subList should extract from
+	 * Returns: a Media[] array with length to-from
+	 * Functionality: Returns a new array of Media
+	 * objects with the right length and containing all
+	 * queue elements from from to to-1.
+	 * Precondition: from and to are both valid indices
+	 * and to is not less than from
+	 */
+	
+	public Media[] subList(int from, int to) {
+		
+    	Media[] returner = new Media[to-from];
+   	 
+    	for(int i = from; i<to; i++) {
+    		
+        	returner[i-from] = this.queue[i];
+        	
+    	}
+    	
+    	return returner;
+    	
+	}
+
+
+	/*
+	 * Non-static method ensureCapacity
+	 * Parameters: minCapacity (int)
+	 * Returns: nothing
+	 * Functionality: Checks to see if capacity
+	 * is at least minCapacity. If it is not, 
+	 * resize this to have capacity minCapacity
+	 */
+	
+	public void ensureCapacity(int minCapacity) {
+		
+    	if (this.capacity<minCapacity) {
+    		
+        	this.resize(minCapacity);
+        	
+    	}
+
+	}
+
+
+	/*
+	 * Static helper method randomIntInRangeInclusive
+	 * Parameters: start (inclusive int), end (inclusive int)
+	 * Returns: a random integer between start and end
+	 * Functionality: Get a random integer in a range
+	 * I just made this cuz I didn't wanna keep doing the annoying 
+	 * random stuff
+	 */
+	
+	public static int randomIntInRangeInclusive(int start, int end) {
+		
+    	return (int)((end-start+1)*Math.random())+start;
+    	
+	}
+	
+	
+	/*
+	 * Non-static method getRandom
+	 * Parameters: none
+	 * Returns: a random Media object from the WatchList
+	 * Functionality: Randomly chooses and returns a
+	 * non-null Media object from the WatchList
+	 * by calling randomIntInRangeInclusive
+	 */
+	
+	public Media getRandom() {
+		
+    	return this.queue[randomIntInRangeInclusive(0, this.size-1)];
+    	
+	}
+    
+	
+	//Lotta test stuff cuz I didn't really understand how to use
+	//the debugger at first
+	
+	public static void main(String[] args) {
+    	LocalDateTime released = LocalDateTime.of(2022, 1, 1, 1, 1);
+    	//reusable expiring
+    	LocalDateTime expiring = LocalDateTime.of(2027, 10, 31, 11, 59);
+    	//reusable Media objects (movie)
+    	Media m4 = new Media("To All the Boys", Media.Type.MOVIE, Media.Genre.DRAMA, released, -1, expiring, true);
+    	Media m5 = new Media("the half of it", Media.Type.MOVIE, Media.Genre.ROMANCE, released, -1, expiring, false);
+    	Media m6 = new Media("Murder Mystery", Media.Type.MOVIE, Media.Genre.DRAMA, released, -1, expiring, false);
+   	 
+   	 
+    	//reusable series
+    	Media m1 = new Media("Fakes", Media.Type.SERIES, Media.Genre.ACTION, released, 1, expiring, true);
+    	Media m2 = new Media("Outer Banks", Media.Type.SERIES, Media.Genre.ACTION, released, 3, expiring, true);
+    	Media m3 = new Media("Sense8", Media.Type.SERIES, Media.Genre.SCIENCE_FICTION, released, 5, expiring, false);
+    	Media m7 = new Media("Grey's Anatomy", Media.Type.SERIES, Media.Genre.DRAMA, released, 19, expiring, false);
+    	
+    	WatchList w = new WatchList(4);
+    	w.append(m1);
+    	w.append(m2);
+    	String stupid = w.toString(false);
+    	System.out.println(w.getSize());
+    	System.out.println(w.getCapacity());
+    	System.out.println(stupid);
+    	WatchList r = new WatchList();
+    	r.append(m2);
+    	r.append(m1);
+   	 
+    	r.remove(m2);
+    	r.remove(m3);
+   	 
+    	System.out.println(r.getCapacity());
+    	System.out.println(r.getSize());
+   	 
+    	Media[] q = new Media[10];
+    	q[0] = m1;
+    	System.out.println(Arrays.equals(q, r.getQueue()));
+   	 
+    	//testing remove watched
+    	WatchList a = new WatchList(4);
+    	System.out.println(a.getSize() + " 0");
+    	System.out.println(a.getCapacity() + " 4");
+   	 
+    	System.out.println(a.append(m5));
+    	System.out.println(a.append(m6));
+    	System.out.println(a.getCapacity() + " 4");
+    	System.out.println(a.getSize() + " 2");
+    	a.addToFront(m4);
+    	a.addToFront(m7);
+   	 
+    	System.out.println(a.getCapacity() + " 8");
+    	System.out.println(a.getSize() + " 4");
+   	 
+    	System.out.println(a.markMediaAsWatched(m5));
+    	System.out.println(a.markMediaAsWatched(m6));
+   	 
+    	System.out.println("3 " + a.removeWatched());
+    	System.out.println("8 " + a.getCapacity());
+    	System.out.println("1 " + a.getSize());
+   	 
+    	Media[] k = new Media[8];
+    	k[0] = m7;
+    	System.out.println(Arrays.equals(k, a.getQueue()));
+   	 
+    	//test RemoveAllGenreAndType
+    	System.out.println("------------");
+    	WatchList dumb = new WatchList(2);
+    	System.out.println(dumb.getSize() + " 0");
+    	System.out.println(dumb.getCapacity() + " 2");
+   	 
+    	System.out.println(dumb.append(m2));
+    	System.out.println(dumb.append(m1));
+    	System.out.println(dumb.getCapacity() + " 4");
+    	System.out.println(dumb.getSize() + " 2");
+    	dumb.addToFront(m3);
+    	System.out.println(dumb.toString(true));
+   	 
+    	System.out.println("2 " + dumb.removeAll(Media.Type.SERIES, Media.Genre.ACTION));
+   	 
+    	System.out.println(dumb.getCapacity() + " 4");
+    	System.out.println(dumb.getSize() + " 1");
+   	 
+    	Media[] moronic = new Media[4];
+    	moronic[0] = m3;
+    	System.out.println(Arrays.equals(q, w.getQueue()));
+   	 
+   	 
+    	//dumb random tests
+    	/*
+    	System.out.println("hsdaljs");
+   	 
+    	int capacity = WatchList.randomIntInRangeInclusive(1, 20);
+    	System.out.println(capacity);
+   	 
+    	WatchList horrible = new WatchList(0, capacity);
+    	System.out.println(horrible.getCapacity() + " " + capacity);
+    	System.out.println(horrible.getSize() + " " + 0);
+    	Media[] terrible = new Media[capacity];
+    	System.out.println(horrible.toString(true));
+    	//assertTrue(Arrays.equals(terrible, horrible.getQueue()));
+   	 
+   	 
+    	//appender
+    	System.out.println("asdlfkhs");
+   	 
+    	Media medTest = new Media();
+    	System.out.println(medTest.toString());
+   	 
+    	int size = WatchList.randomIntInRangeInclusive(0, 15);
+   	 
+    	capacity = WatchList.randomIntInRangeInclusive(size+2, size+11);
+   	 
+    	System.out.println(size);
+    	System.out.println(capacity);
+   	 
+    	WatchList asdf = new WatchList(size, capacity);
+    	System.out.println(asdf.toString(true));
+   	 
+    	System.out.println(asdf.getCapacity() + " " + capacity);
+   	 
+    	System.out.println(asdf.append(m1));
+    	System.out.println(asdf.toString(true));
+    	System.out.println(asdf.getCapacity() + " " + capacity);
+    	System.out.println(capacity);
+    	Media[] qwerty = new Media[capacity];
+    	System.out.println(asdf.getCapacity() + " " + capacity);
+    	Media[] arr = new Media[size];
+    	arr = asdf.toArray();
+    	for (int i = 0; i<size; i++) {
+       	 
+        	qwerty[i] = arr[i];
+       	 
+    	}
+    	System.out.println(asdf.toString(true));
+    	System.out.println(asdf.getCapacity() + " " + capacity);
+    	qwerty[size] = m1;
+   	 
+    	System.out.println(asdf.getSize() + " " + (size+1));
+    	System.out.println(asdf.getCapacity() + " " + capacity);
+    	System.out.println(Arrays.equals(qwerty, asdf.getQueue()));
+    	*/
+    	
+	}
+	
+}
+
+//end WatchList.java
